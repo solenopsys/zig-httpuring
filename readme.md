@@ -27,12 +27,32 @@ You'll need **OpenSSL** and **zig-pico** for compilation:
 git clone https://github.com/solenopsys/zig-pico ../zig-pico
 sudo apt install openssl libssl-dev  # For Debian-based systems
 ```
-#### 3. Build & Run  
+#### 3. Build  
 ```sh
-zig build run
 
-siege -c10 -r50000  http://0.0.0.0:8080/
+zig build 
+
 ```
+
+#### 3. Run  
+```sh
+
+
+# http
+./zig-out/bin/ingress 
+
+siege -c10 -r10000  http://0.0.0.0:8080/
+
+# ssl
+
+./zig-out/bin/ingress --secure --cert server.crt --key server.key
+
+siege -c50 -r100  https://0.0.0.0:8080/
+ 
+
+```
+
+
 
 ### 📌 Roadmap  
 - Support for WebSocket 
