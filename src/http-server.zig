@@ -15,8 +15,6 @@ const log = @import("./types.zig").log;
 
 const DataHandler = @import("types.zig").DataHandler;
 
-const httpHandler = @import("./http-handler.zig").httpHandler;
-
 pub const ServerConfig = struct {
     port: u16,
     num_workers: usize,
@@ -220,8 +218,9 @@ const Worker = struct {
     buffer_size: usize,
     is_secure: bool,
     ssl_ctx: ?*c.SSL_CTX,
+    handler: DataHandler,
 
-    pub fn init(allocator: Allocator, id: usize, port: u16, buffer_size: usize, initial_pool_size: usize, is_secure: bool, ssl_ctx: ?*c.SSL_CTX) !Worker {
+    pub fn init(allocator: Allocator, handler: DataHandler, id: usize, port: u16, buffer_size: usize, initial_pool_size: usize, is_secure: bool, ssl_ctx: ?*c.SSL_CTX) !Worker {
         const server_socket = try createServerSocket(port);
         var ring_params = std.mem.zeroes(linux.io_uring_params);
 
@@ -240,6 +239,7 @@ const Worker = struct {
             .buffer_size = buffer_size,
             .is_secure = is_secure,
             .ssl_ctx = ssl_ctx,
+            .handler = handler,
         };
     }
 
@@ -427,8 +427,8 @@ const Worker = struct {
             }
         }
 
-        // Обрабатываем запрос и получаем ответ
-        const response = try httpHandler(self.allocator, request);
+        const response = try self.handler.processFn(self.allocator, request);
+        // = try httpHandler(self.allocator, request);
 
         // Для SSL соединений используем poll_add для записи
         if (client.is_secure) {
@@ -531,7 +531,6 @@ fn createServerSocket(port: u16) !posix.fd_t {
 }
 
 pub fn startServer(allocator: Allocator, config: ServerConfig, handler: DataHandler) !void {
-    _ = handler;
     const buffer_size = 8192; // Увеличил размер буфера
     const initial_pool_size = 256; // Увеличил размер пула буферов
 
@@ -559,7 +558,7 @@ pub fn startServer(allocator: Allocator, config: ServerConfig, handler: DataHand
     defer allocator.free(threads);
 
     for (workers, 0..) |*worker, i| {
-        worker.* = try Worker.init(allocator, i, config.port, buffer_size, initial_pool_size, config.secure, ssl_ctx);
+        worker.* = try Worker.init(allocator, handler, i, config.port, buffer_size, initial_pool_size, config.secure, ssl_ctx);
     }
 
     for (threads, 0..) |*thread, i| {

@@ -7,6 +7,10 @@ const HttpRequest = picozig.HttpRequest;
 const HttpProcessor = @import("./http-processor.zig").HttpProcessor;
 const ProtocolHandler = @import("./types.zig").ProtocolHandler;
 
+const HandlerError = @import("./types.zig").HandlerError;
+
+// http Error
+
 const RootHandler = struct {
     pub fn handle(request: HttpRequest, allocator: std.mem.Allocator) ![]const u8 {
         _ = request;
@@ -27,7 +31,7 @@ const RootHandler = struct {
     }
 };
 
-pub fn httpHandler(allocator: std.mem.Allocator, data: []const u8) ![]const u8 {
+pub fn httpHandler(allocator: std.mem.Allocator, data: []const u8) HandlerError![]const u8 {
     // std.debug.print("Data: {s}\n", .{data});
     var headers: [32]picozig.Header = undefined;
     const httpParams = picozig.HttpParams{

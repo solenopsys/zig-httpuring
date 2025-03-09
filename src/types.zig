@@ -4,18 +4,19 @@ const HttpRequest = @import("picozig").HttpRequest;
 const HttpResponse = @import("picozig").HttpResponse;
 const Allocator = std.mem.Allocator;
 
-const HandlerError = error{
+pub const HandlerError = error{
     OutOfMemory,
     InvalidInput,
+};
+
+pub const DataHandler = struct {
+    processFn: *const fn (allocator: std.mem.Allocator, data: []const u8) HandlerError![]const u8,
 };
 
 pub const ProtocolHandler = struct {
     pathPrefix: []const u8,
     method: []const u8,
     handleFn: *const fn (request: HttpRequest, allocator: Allocator) error{OutOfMemory}![]const u8,
-};
-pub const DataHandler = struct {
-    processFn: fn (allocator: std.mem.Allocator, data: []const u8) HandlerError![]const u8,
 };
 
 // Константа для включения/отключения логирования
