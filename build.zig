@@ -4,32 +4,33 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseFast });
 
-    const exe = b.addExecutable(.{
-        .name = "ingress",
-        .root_source_file = b.path("src/example.zig"),
+    const picozig_mod = b.dependency("picozig", .{
         .target = target,
         .optimize = optimize,
     });
 
-    // Напрямую создаем модуль вместо использования зависимости
-    const picozig_mod = b.createModule(.{
-        .root_source_file = b.path("../zig-pico/src/main.zig"),
+    const lib_mod = b.createModule(.{
+        .root_source_file = b.path("src/root.zig"),
+        .target = target,
+        .optimize = optimize,
     });
 
-    // Добавляем модуль к исполняемому файлу
-    exe.root_module.addImport("picozig", picozig_mod);
+    const lib = b.addLibrary(.{
+        .linkage = .static,
+        .name = "picozig",
+        .root_module = lib_mod,
+    });
 
-    exe.linkSystemLibrary("ssl");
-    exe.linkSystemLibrary("crypto");
+    // Change this line - use "udp_uring" instead of "picozig"
+    const udp_artifact = picozig_mod.artifact("udp_uring");
 
-    exe.linkLibCpp();
-    exe.linkLibC();
+    lib.root_module.addImport("picozig", udp_artifact.root_module);
 
-    b.installArtifact(exe);
+    lib.linkSystemLibrary("ssl");
+    lib.linkSystemLibrary("crypto");
 
-    const run_cmd = b.addRunArtifact(exe);
-    run_cmd.step.dependOn(b.getInstallStep());
+    lib.linkLibCpp();
+    lib.linkLibC();
 
-    const run_step = b.step("run", "Run the SSL test");
-    run_step.dependOn(&run_cmd.step);
+    b.installArtifact(lib);
 }

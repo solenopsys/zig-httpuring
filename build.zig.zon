@@ -1,0 +1,22 @@
+.{
+    .name = .zig_httpuring,
+
+    .version = "0.0.0",
+
+    .fingerprint = 0x48da543dd8065391,
+
+    .minimum_zig_version = "0.14.0",
+
+    .dependencies = .{
+        .picozig = .{
+            .url = "https://github.com/solenopsys/zig-pico/archive/0d9695011924c4dabc46d41e0051e3a7cfc1a7f9.tar.gz",
+            .hash = "udp_uring-0.0.1-ZfYJtlx2AABkoCgCSHhPORVCdeFaBjCxy8YlyxmQh2Dk",
+        },
+    },
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
