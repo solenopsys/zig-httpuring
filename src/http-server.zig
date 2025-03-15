@@ -89,7 +89,7 @@ const LocalBufferPool = struct {
 
     pub fn getBuffer(self: *LocalBufferPool, buffer_size: usize) ![]u8 {
         if (self.buffers.items.len > 0) {
-            return self.buffers.pop();
+            return self.buffers.pop() orelse error.BufferNotAvailable;
         }
         return try self.allocator.alloc(u8, buffer_size);
     }
