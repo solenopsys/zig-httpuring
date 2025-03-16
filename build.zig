@@ -4,10 +4,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseFast });
 
-    const picozig_mod = b.dependency("picozig", .{
-        .target = target,
-        .optimize = optimize,
-    });
+    const picozig_mod = b.dependency("picozig", .{});
 
     const lib_mod = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),

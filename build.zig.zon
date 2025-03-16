@@ -10,7 +10,7 @@
     .dependencies = .{
         .picozig = .{
             .url = "https://github.com/solenopsys/zig-pico/archive/0d9695011924c4dabc46d41e0051e3a7cfc1a7f9.tar.gz",
-            .hash = "udp_uring-0.0.1-ZfYJtlx2AABkoCgCSHhPORVCdeFaBjCxy8YlyxmQh2Dk",
+            .hash = "zig_pico-0.0.0-_nVnubyDAACczYJ3UoH5YJe5GM0ryyWhUcHumMjpVYZ-",
         },
     },
 
