@@ -22,9 +22,9 @@ pub fn build(b: *std.Build) void {
     });
 
     // Change this line - use "udp_uring" instead of "picozig"
-    const udp_artifact = picozig_mod.artifact("udp_uring");
+    const picozig_artifact = picozig_mod.artifact("picozig");
 
-    lib.root_module.addImport("picozig", udp_artifact.root_module);
+    lib.root_module.addImport("picozig", picozig_artifact.root_module);
 
     lib.linkSystemLibrary("ssl");
     lib.linkSystemLibrary("crypto");

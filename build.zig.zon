@@ -1,7 +1,7 @@
 .{
     .name = .zig_httpuring,
 
-    .version = "0.0.0",
+    .version = "0.0.2",
 
     .fingerprint = 0x48da543dd8065391,
 
